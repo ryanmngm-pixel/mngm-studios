@@ -1,0 +1,206 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background: #000;
+  color: #fff;
+  font-family: Inter, sans-serif;
+}
+
+#root {
+  width: 100%;
+}
+
+/* NAVBAR */
+
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+
+  padding: 32px 24px;
+}
+
+.navbar-logo {
+  width: 60px;
+  height: 60px;
+}
+
+.navbar-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: white;
+}
+
+/* HERO */
+
+.hero {
+  text-align: center;
+
+  max-width: 900px;
+  margin: 0 auto;
+
+  padding: 80px 24px;
+}
+
+.hero h1 {
+  font-size: clamp(3rem, 8vw, 6rem);
+  line-height: 1;
+  font-weight: 800;
+
+  margin-bottom: 24px;
+
+  color: white;
+}
+
+.hero p {
+  font-size: 1.3rem;
+  color: #8f8f8f;
+
+  max-width: 700px;
+  margin: 0 auto 40px;
+}
+
+.hero-button {
+  background: white;
+  color: black;
+
+  border: none;
+  border-radius: 14px;
+
+  padding: 16px 28px;
+
+  font-size: 1rem;
+  font-weight: 600;
+
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.hero-button:hover {
+  transform: translateY(-2px);
+}
+
+/* SECTIONS */
+
+.section {
+  max-width: 1200px;
+  margin: 0 auto;
+
+  padding: 80px 24px;
+}
+
+.section h2 {
+  text-align: center;
+
+  font-size: 2.5rem;
+  font-weight: 700;
+
+  margin-bottom: 50px;
+
+  color: white;
+}
+
+/* CARDS */
+
+.card-grid {
+  display: grid;
+
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+
+  gap: 24px;
+}
+
+.service-card,
+.portfolio-card {
+  background: #080808;
+
+  border: 1px solid #1b1b1b;
+  border-radius: 24px;
+
+  padding: 32px;
+
+  transition: all 0.25s ease;
+}
+
+.service-card:hover,
+.portfolio-card:hover {
+  transform: translateY(-5px);
+
+  border-color: #333;
+}
+
+.service-card h3,
+.portfolio-card h3 {
+  font-size: 1.5rem;
+  margin-bottom: 12px;
+
+  color: white;
+}
+
+.service-card p,
+.portfolio-card p {
+  color: #8f8f8f;
+  line-height: 1.6;
+}
+
+/* CTA */
+
+.cta {
+  text-align: center;
+
+  max-width: 900px;
+  margin: 0 auto;
+
+  padding: 100px 24px;
+}
+
+.cta h2 {
+  font-size: 3rem;
+  margin-bottom: 20px;
+
+  color: white;
+}
+
+.cta p {
+  color: #8f8f8f;
+
+  font-size: 1.2rem;
+
+  margin-bottom: 32px;
+}
+
+/* FOOTER */
+
+.footer {
+  text-align: center;
+
+  padding: 60px 24px;
+
+  color: #666;
+
+  border-top: 1px solid #111;
+}
+
+/* FORCE TEXT WHITE */
+
+h1,
+h2,
+h3,
+a,
+.navbar-title {
+  color: white;
+}
+
+.portfolio-card-link {
+  text-decoration: none;
+  color: inherit;
+}
+
+.portfolio-card-link:hover {
+  text-decoration: none;
+}
