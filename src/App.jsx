@@ -20,9 +20,10 @@ import {
   Code2,
   Layers3,
   Globe2,
-  Check,
 } from "lucide-react";
+
 import "./App.css";
+import ContactPage from "./Contact";
 
 const ACCENT = "#FF784F";
 const PHONE = "4352782290";
@@ -107,13 +108,10 @@ const colors = [
 ];
 
 /* ======================================
-   VECTOR SYMBOL — NO IPHONE EMOJI
+   VECTOR SYMBOL
    ====================================== */
 
-function Asterisk({
-  size = 24,
-  className = "",
-}) {
+function Asterisk({ size = 24, className = "" }) {
   return (
     <svg
       className={className}
@@ -147,7 +145,6 @@ async function copyPhone() {
   }
 
   const textarea = document.createElement("textarea");
-
   textarea.value = PHONE;
   textarea.setAttribute("readonly", "");
   textarea.style.position = "fixed";
@@ -156,7 +153,6 @@ async function copyPhone() {
   textarea.style.opacity = "0";
 
   document.body.appendChild(textarea);
-
   textarea.focus();
   textarea.select();
   textarea.setSelectionRange(0, PHONE.length);
@@ -199,42 +195,31 @@ function usePhoneCopy() {
   return { copy, copied, failed };
 }
 
+/* ======================================
+   CONTACT PAGE NAVIGATION
+   ====================================== */
+
 function ContactButton({
   children = "START A PROJECT",
   className = "",
   showIcon = true,
   onCopied,
 }) {
-  const { copy, copied, failed } = usePhoneCopy();
-
-  const handleClick = async () => {
-    await copy();
+  const handleClick = () => {
     if (onCopied) onCopied();
+    window.location.assign("/contact");
   };
 
   return (
     <button
       type="button"
-      className={`contact-button ${className} ${
-        copied ? "contact-copied" : ""
-      }`}
+      className={`contact-button ${className}`}
       onClick={handleClick}
-      aria-label="Copy MNGM Studios phone number"
+      aria-label="Open the MNGM Studios contact page"
     >
-      <span aria-live="polite">
-        {copied
-          ? "NUMBER COPIED ✓"
-          : failed
-          ? "COPY FAILED — TRY AGAIN"
-          : children}
-      </span>
+      <span>{children}</span>
 
-      {showIcon &&
-        (copied ? (
-          <Check size={18} />
-        ) : (
-          <ArrowUpRight size={18} />
-        ))}
+      {showIcon && <ArrowUpRight size={18} />}
     </button>
   );
 }
@@ -290,7 +275,6 @@ function Magnetic({
   ariaLabel,
 }) {
   const ref = useRef(null);
-
   const x = useMotionValue(0);
   const y = useMotionValue(0);
 
@@ -359,6 +343,10 @@ function Magnetic({
   );
 }
 
+/* ======================================
+   CUSTOM CURSOR
+   ====================================== */
+
 function Cursor() {
   const [visible, setVisible] = useState(false);
   const [hovering, setHovering] = useState(false);
@@ -386,8 +374,8 @@ function Cursor() {
     const move = (event) => {
       x.set(event.clientX);
       y.set(event.clientY);
-
       setVisible(true);
+
       setHovering(
         Boolean(
           event.target.closest(
@@ -1490,9 +1478,7 @@ function Playground() {
           {shapes.map((shape, i) => (
             <motion.div
               key={i}
-              className={`play-shape play-shape-${
-                i % 3
-              }`}
+              className={`play-shape play-shape-${i % 3}`}
               drag
               dragMomentum={false}
               dragConstraints={playRef}
@@ -1528,8 +1514,7 @@ function Playground() {
               rotateY,
               rotateZ: rotation,
               color,
-              WebkitTextStrokeColor:
-                color,
+              WebkitTextStrokeColor: color,
               fontSize: `clamp(28px, ${
                 size / 10
               }vw, 160px)`,
@@ -1594,13 +1579,9 @@ function Playground() {
                   style={{
                     background: c,
                   }}
-                  onClick={() =>
-                    setColor(c)
-                  }
+                  onClick={() => setColor(c)}
                   aria-label={`Select ${c}`}
-                  aria-pressed={
-                    color === c
-                  }
+                  aria-pressed={color === c}
                 />
               ))}
             </div>
@@ -1645,9 +1626,7 @@ function Playground() {
           <div className="control-group slider-group">
             <label htmlFor="rotation">
               03 / ROTATION
-              <span>
-                {rotation}°
-              </span>
+              <span>{rotation}°</span>
             </label>
 
             <input
@@ -1658,9 +1637,7 @@ function Playground() {
               value={rotation}
               onChange={(event) =>
                 setRotation(
-                  Number(
-                    event.target.value
-                  )
+                  Number(event.target.value)
                 )
               }
             />
@@ -1669,9 +1646,7 @@ function Playground() {
           <div className="control-group slider-group">
             <label htmlFor="scale">
               04 / SCALE
-              <span>
-                {size}%
-              </span>
+              <span>{size}%</span>
             </label>
 
             <input
@@ -1682,9 +1657,7 @@ function Playground() {
               value={size}
               onChange={(event) =>
                 setSize(
-                  Number(
-                    event.target.value
-                  )
+                  Number(event.target.value)
                 )
               }
             />
@@ -1762,9 +1735,7 @@ function Services() {
                     open === i ? -1 : i
                   )
                 }
-                aria-expanded={
-                  open === i
-                }
+                aria-expanded={open === i}
               >
                 <span className="service-number">
                   {service.number}
@@ -1887,7 +1858,7 @@ function Statement() {
 }
 
 /* ======================================
-   CONTACT
+   HOMEPAGE CONTACT SECTION
    ====================================== */
 
 function Contact() {
@@ -1973,13 +1944,11 @@ function Contact() {
 }
 
 /* ======================================
-   ORIGINAL LOADING SCREEN
+   LOADING SCREEN
    ====================================== */
 
 function LoadingScreen({ onDone }) {
-  const [progress, setProgress] =
-    useState(0);
-
+  const [progress, setProgress] = useState(0);
   const reduced = useReducedMotion();
 
   useEffect(() => {
@@ -1990,40 +1959,25 @@ function LoadingScreen({ onDone }) {
 
     const duration = 1850;
     const start = performance.now();
-
     let frame;
 
     const update = (now) => {
       const elapsed = now - start;
+      const t = Math.min(elapsed / duration, 1);
+      const eased = 1 - Math.pow(1 - t, 3);
 
-      const t = Math.min(
-        elapsed / duration,
-        1
-      );
-
-      const eased =
-        1 - Math.pow(1 - t, 3);
-
-      setProgress(
-        Math.round(eased * 100)
-      );
+      setProgress(Math.round(eased * 100));
 
       if (t < 1) {
-        frame = requestAnimationFrame(
-          update
-        );
+        frame = requestAnimationFrame(update);
       } else {
-        frame = requestAnimationFrame(
-          () => {
-            setTimeout(onDone, 350);
-          }
-        );
+        frame = requestAnimationFrame(() => {
+          setTimeout(onDone, 350);
+        });
       }
     };
 
-    frame = requestAnimationFrame(
-      update
-    );
+    frame = requestAnimationFrame(update);
 
     return () => {
       cancelAnimationFrame(frame);
@@ -2089,8 +2043,7 @@ function LoadingScreen({ onDone }) {
    ====================================== */
 
 function ProgressBar() {
-  const { scrollYProgress } =
-    useScroll();
+  const { scrollYProgress } = useScroll();
 
   return (
     <motion.div
@@ -2103,7 +2056,7 @@ function ProgressBar() {
 }
 
 /* ======================================
-   MAIN APP
+   MAIN APP + CONTACT PAGE ROUTE
    ====================================== */
 
 export default function App() {
@@ -2117,10 +2070,22 @@ export default function App() {
     []
   );
 
+  // Separate Contact.jsx page.
+  // Keep the homepage unchanged.
+
+  if (
+    window.location.pathname.replace(/\/+$/, "") ===
+    "/contact"
+  ) {
+    return <ContactPage />;
+  }
+
   return (
     <div className="app">
       <ProgressBar />
+
       <Cursor />
+
       <BackgroundCanvas />
 
       <AnimatePresence>
