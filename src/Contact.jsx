@@ -3,10 +3,26 @@ import React, { useState } from "react";
 import "./Contact.css";
 
 const STYLES = [
-  { id: "minimal", name: "Minimal", description: "Clean and intentional" },
-  { id: "tech", name: "Modern Tech", description: "Futuristic and immersive" },
-  { id: "bold", name: "Bold", description: "Confident and expressive" },
-  { id: "elegant", name: "Elegant", description: "Refined and timeless" },
+  {
+    id: "minimal",
+    name: "Minimal",
+    description: "Clean and intentional",
+  },
+  {
+    id: "tech",
+    name: "Modern Tech",
+    description: "Futuristic and immersive",
+  },
+  {
+    id: "bold",
+    name: "Bold",
+    description: "Confident and expressive",
+  },
+  {
+    id: "elegant",
+    name: "Elegant",
+    description: "Refined and timeless",
+  },
 ];
 
 const COLORS = [
@@ -23,41 +39,48 @@ const STYLE_CONTENT = {
   minimal: {
     eyebrow: "A BETTER WAY FORWARD",
     heading: "Make something meaningful.",
-    description: "Thoughtful design for brands with a clear vision.",
+    description:
+      "Thoughtful design for brands with a clear vision.",
     button: "Explore our work",
   },
   tech: {
     eyebrow: "THE NEXT GENERATION",
     heading: "Build beyond limits.",
-    description: "Digital experiences engineered for what's next.",
+    description:
+      "Digital experiences engineered for what's next.",
     button: "Get started",
   },
   bold: {
     eyebrow: "BREAK THE ORDINARY",
     heading: "MAKE AN IMPACT.",
-    description: "Big ideas deserve an unforgettable presence.",
+    description:
+      "Big ideas deserve an unforgettable presence.",
     button: "LET'S GO",
   },
   elegant: {
     eyebrow: "WELCOME TO SOMETHING SPECIAL",
     heading: "Designed to inspire.",
-    description: "Where beautiful details meet extraordinary ideas.",
+    description:
+      "Where beautiful details meet extraordinary ideas.",
     button: "Discover more",
   },
 };
 
+const INITIAL_FORM = {
+  name: "",
+  email: "",
+  message: "",
+};
+
 export default function Contact() {
-  const [form, setForm] = useState({
-    name: "",
-    email: "",
-    message: "",
-  });
+  const [form, setForm] = useState(INITIAL_FORM);
 
   const [includeDemo, setIncludeDemo] = useState(false);
   const [style, setStyle] = useState("minimal");
   const [color, setColor] = useState("#FF784F");
   const [customColor, setCustomColor] = useState(false);
   const [previewMode, setPreviewMode] = useState("desktop");
+
   const [status, setStatus] = useState("idle");
   const [error, setError] = useState("");
 
@@ -65,43 +88,74 @@ export default function Contact() {
 
   const updateForm = (event) => {
     const { name, value } = event.target;
-    setForm((previous) => ({ ...previous, [name]: value }));
+
+    setForm((previous) => ({
+      ...previous,
+      [name]: value,
+    }));
+
+    if (status === "error" || status === "success") {
+      setStatus("idle");
+      setError("");
+    }
   };
 
   const submitForm = async (event) => {
     event.preventDefault();
+
     if (status === "sending") return;
 
     setStatus("sending");
     setError("");
 
+    // These field names match api/contact.js.
+    // Demo settings are sent as top-level properties
+    // instead of a nested demo object.
     const payload = {
-      ...form,
-      demo: includeDemo
-        ? {
-            style,
-            accentColor: color,
-          }
-        : null,
+      name: form.name.trim(),
+      email: form.email.trim(),
+      message: form.message.trim(),
+
+      demoEnabled: includeDemo,
+
+      style: includeDemo ? style : "",
+      accentColor: includeDemo ? color : "",
+      previewDevice: includeDemo ? previewMode : "",
     };
 
     try {
       const response = await fetch("/api/contact", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify(payload),
       });
 
-      if (!response.ok) {
-        throw new Error("Message could not be sent.");
+      const result = await response.json().catch(() => null);
+
+      if (!response.ok || result?.success !== true) {
+        throw new Error(
+          result?.error ||
+            "We couldn't send your message. Please try again shortly."
+        );
       }
 
       setStatus("success");
-      setForm({ name: "", email: "", message: "" });
+      setForm(INITIAL_FORM);
+
+      // Reset the builder after a successful submission.
+      setIncludeDemo(false);
+      setStyle("minimal");
+      setColor("#FF784F");
+      setCustomColor(false);
+      setPreviewMode("desktop");
     } catch (err) {
       setStatus("error");
       setError(
-        "We couldn't send your message. Please try again shortly."
+        err instanceof Error
+          ? err.message
+          : "We couldn't send your message. Please try again shortly."
       );
     }
   };
@@ -139,12 +193,16 @@ export default function Contact() {
               <h2>Tell us about your project.</h2>
               <p>Start with the basics. We'll handle the rest.</p>
             </div>
-            <span className="contact-form-step">01 / INQUIRY</span>
+
+            <span className="contact-form-step">
+              01 / INQUIRY
+            </span>
           </div>
 
           <div className="contact-field-row">
             <label className="contact-field">
               <span>Your name</span>
+
               <input
                 type="text"
                 name="name"
@@ -152,12 +210,14 @@ export default function Contact() {
                 value={form.name}
                 onChange={updateForm}
                 maxLength={100}
+                autoComplete="name"
                 required
               />
             </label>
 
             <label className="contact-field">
               <span>Email address</span>
+
               <input
                 type="email"
                 name="email"
@@ -165,6 +225,7 @@ export default function Contact() {
                 value={form.email}
                 onChange={updateForm}
                 maxLength={254}
+                autoComplete="email"
                 required
               />
             </label>
@@ -172,6 +233,7 @@ export default function Contact() {
 
           <label className="contact-field">
             <span>Tell us about your project</span>
+
             <textarea
               name="message"
               placeholder="I have an idea for a website..."
@@ -186,8 +248,10 @@ export default function Contact() {
           <div className="contact-demo-toggle">
             <div className="contact-demo-toggle-copy">
               <span className="contact-demo-icon">✳</span>
+
               <div>
                 <h3>Want to show us your vision?</h3>
+
                 <p>
                   Create a quick demo website to help us understand
                   the look you're going for.
@@ -199,11 +263,12 @@ export default function Contact() {
               <input
                 type="checkbox"
                 checked={includeDemo}
-                onChange={(event) =>
-                  setIncludeDemo(event.target.checked)
-                }
+                onChange={(event) => {
+                  setIncludeDemo(event.target.checked);
+                }}
                 aria-label="Create a demo website"
               />
+
               <span className="contact-switch-track" />
             </label>
           </div>
@@ -215,12 +280,15 @@ export default function Contact() {
                   <span className="contact-section-label">
                     02 / DESIGN STUDIO
                   </span>
+
                   <h2>Bring your vision to life.</h2>
+
                   <p>
                     Experiment with styles and colors. Your choices
                     will be included with your message.
                   </p>
                 </div>
+
                 <span className="contact-live-badge">
                   <span /> LIVE PREVIEW
                 </span>
@@ -250,10 +318,12 @@ export default function Contact() {
                           <span />
                           <span />
                         </div>
+
                         <div className="thumb-heading" />
                         <div className="thumb-subheading" />
                         <div className="thumb-button" />
                       </div>
+
                       <strong>{item.name}</strong>
                       <small>{item.description}</small>
                     </button>
@@ -305,20 +375,23 @@ export default function Contact() {
                     <label htmlFor="contact-color-picker">
                       Choose your own color
                     </label>
+
                     <div className="contact-custom-color-controls">
                       <input
                         id="contact-color-picker"
                         type="color"
                         value={color}
-                        onChange={(event) =>
-                          setColor(event.target.value)
-                        }
+                        onChange={(event) => {
+                          setColor(event.target.value);
+                        }}
                       />
+
                       <input
                         type="text"
                         value={color.toUpperCase()}
                         onChange={(event) => {
                           const value = event.target.value;
+
                           if (/^#[0-9a-fA-F]{6}$/.test(value)) {
                             setColor(value);
                           }
@@ -326,6 +399,7 @@ export default function Contact() {
                         aria-label="Hex color"
                       />
                     </div>
+
                     <p>
                       Use the color picker to select any shade you want.
                     </p>
@@ -347,15 +421,18 @@ export default function Contact() {
                         previewMode === "desktop" ? "active" : ""
                       }
                       onClick={() => setPreviewMode("desktop")}
+                      aria-pressed={previewMode === "desktop"}
                     >
                       Desktop
                     </button>
+
                     <button
                       type="button"
                       className={
                         previewMode === "mobile" ? "active" : ""
                       }
                       onClick={() => setPreviewMode("mobile")}
+                      aria-pressed={previewMode === "mobile"}
                     >
                       Mobile
                     </button>
@@ -369,9 +446,11 @@ export default function Contact() {
                       <i />
                       <i />
                     </div>
+
                     <div className="contact-browser-address">
                       yourbrand.com
                     </div>
+
                     <div className="contact-browser-spacer" />
                   </div>
 
@@ -381,12 +460,16 @@ export default function Contact() {
                       style={{ "--demo-accent": color }}
                     >
                       <div className="demo-site-nav">
-                        <strong>YOUR BRAND<span>.</span></strong>
+                        <strong>
+                          YOUR BRAND<span>.</span>
+                        </strong>
+
                         <div className="demo-site-links">
                           <span>Home</span>
                           <span>About</span>
                           <span>Services</span>
                         </div>
+
                         <span className="demo-site-nav-cta">
                           Contact
                         </span>
@@ -396,8 +479,11 @@ export default function Contact() {
                         <span className="demo-site-eyebrow">
                           {content.eyebrow}
                         </span>
+
                         <h2>{content.heading}</h2>
+
                         <p>{content.description}</p>
+
                         <span className="demo-site-button">
                           {content.button} <span>↗</span>
                         </span>
@@ -409,11 +495,13 @@ export default function Contact() {
                           <strong>Creative thinking.</strong>
                           <p>Made for your next chapter.</p>
                         </div>
+
                         <div>
                           <span>02</span>
                           <strong>Better experiences.</strong>
                           <p>Designed with purpose.</p>
                         </div>
+
                         <div>
                           <span>03</span>
                           <strong>Real impact.</strong>
@@ -436,6 +524,7 @@ export default function Contact() {
           <div className="contact-submit-area">
             <div>
               <strong>Ready when you are.</strong>
+
               <p>
                 {includeDemo
                   ? "Your message and demo preferences will be sent together."
@@ -451,26 +540,38 @@ export default function Contact() {
               {status === "sending"
                 ? "Sending..."
                 : "Send message"}
+
               <span>↗</span>
             </button>
           </div>
 
           {status === "success" && (
-            <div className="contact-feedback success" role="status">
+            <div
+              className="contact-feedback success"
+              role="status"
+            >
               Message sent successfully. We'll be in touch.
             </div>
           )}
 
           {status === "error" && (
-            <div className="contact-feedback error" role="alert">
+            <div
+              className="contact-feedback error"
+              role="alert"
+            >
               {error}
             </div>
           )}
         </form>
 
         <footer className="contact-footer">
-          <span>© {new Date().getFullYear()} MNGM STUDIOS</span>
-          <span>CREATIVE THINKING. REAL EXECUTION.</span>
+          <span>
+            © {new Date().getFullYear()} MNGM STUDIOS
+          </span>
+
+          <span>
+            CREATIVE THINKING. REAL EXECUTION.
+          </span>
         </footer>
       </div>
     </main>
