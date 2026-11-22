@@ -130,7 +130,7 @@ function Reveal({ children, className = "" }) {
         amount: 0.1,
       }}
       transition={{
-        duration: reduced ? 0 : 0.9,
+        duration: reduced ? 0 : 0.65,
         ease: EASE,
       }}
     >
@@ -167,6 +167,7 @@ function Brand() {
 function Header() {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
+  const menuButton = useRef(null);
 
   const reduced = useReducedMotion();
 
@@ -196,6 +197,7 @@ function Header() {
     const keydown = (event) => {
       if (event.key === "Escape") {
         setOpen(false);
+        menuButton.current?.focus();
       }
     };
 
@@ -258,7 +260,8 @@ function Header() {
         <button
           type="button"
           className="m-menu-toggle"
-          onClick={() => setOpen(!open)}
+          ref={menuButton}
+          onClick={() => setOpen((value) => !value)}
           aria-label={
             open ? "Close menu" : "Open menu"
           }
@@ -279,20 +282,18 @@ function Header() {
             id="m-mobile-menu"
             className="m-mobile-menu"
             aria-label="Mobile navigation"
-            initial={{
-              opacity: 0,
-              y: -15,
-            }}
+            initial={reduced ? false : { opacity: 0, y: -10 }}
             animate={{
               opacity: 1,
               y: 0,
             }}
             exit={{
               opacity: 0,
-              y: -15,
+              y: reduced ? 0 : -7,
             }}
             transition={{
-              duration: reduced ? 0 : 0.35,
+              duration: reduced ? 0 : 0.26,
+              ease: EASE,
             }}
           >
             {[
@@ -382,7 +383,7 @@ function Hero() {
               : { opacity: 0 }
           }
           animate={{ opacity: 1 }}
-          transition={{ duration: 1 }}
+          transition={{ duration: reduced ? 0 : 0.5, ease: EASE }}
         >
           <div className="m-hero-eyebrow">
             <span className="m-dot" />
@@ -407,11 +408,11 @@ function Hero() {
                     }
                     animate={{ y: 0 }}
                     transition={{
-                      duration: reduced ? 0 : 1.3,
+                      duration: reduced ? 0 : 0.95,
                       delay:
                         reduced
                           ? 0
-                          : 0.12 + i * 0.15,
+                          : 0.08 + i * 0.12,
                       ease: EASE,
                     }}
                   >
@@ -433,8 +434,8 @@ function Hero() {
               y: 0,
             }}
             transition={{
-              duration: reduced ? 0 : 0.9,
-              delay: reduced ? 0 : 0.6,
+              duration: reduced ? 0 : 0.7,
+              delay: reduced ? 0 : 0.38,
               ease: EASE,
             }}
           >
@@ -662,7 +663,7 @@ function Services() {
                         }}
                         transition={{
                           duration:
-                            reduced ? 0 : 0.4,
+                            reduced ? 0 : 0.3,
                           ease: EASE,
                         }}
                       >
@@ -687,14 +688,14 @@ function Services() {
 
             <div className="m-capability-orbit m-orbit-two" />
 
-            <AnimatePresence mode="wait">
+            <AnimatePresence initial={false}>
               <motion.div
                 className="m-capability-icon"
                 key={active}
                 initial={{
                   opacity: 0,
-                  scale: reduced ? 1 : 0.75,
-                  rotate: reduced ? 0 : -10,
+                  scale: reduced ? 1 : 0.88,
+                  rotate: reduced ? 0 : -7,
                 }}
                 animate={{
                   opacity: 1,
@@ -703,10 +704,11 @@ function Services() {
                 }}
                 exit={{
                   opacity: 0,
-                  scale: reduced ? 1 : 1.15,
+                  scale: reduced ? 1 : 1.06,
                 }}
                 transition={{
-                  duration: reduced ? 0 : 0.45,
+                  duration: reduced ? 0 : 0.3,
+                  opacity: { duration: reduced ? 0 : 0.18 },
                   ease: EASE,
                 }}
               >
@@ -735,11 +737,13 @@ function Ticket({ index }) {
   return (
     <motion.div
       className="m-ticket"
+      initial={false}
       animate={{
         backgroundColor: item.color,
       }}
       transition={{
-        duration: reduced ? 0 : 0.65,
+        duration: reduced ? 0 : 0.32,
+        ease: EASE,
       }}
     >
       <div className="m-ticket-texture" />
@@ -760,51 +764,51 @@ function Ticket({ index }) {
         THE DIGITAL EXPERIENCE PASS
       </div>
 
-      <AnimatePresence
-        mode="wait"
-        initial={false}
-      >
-        <motion.div
-          className="m-ticket-info"
-          key={index}
-          initial={{
-            opacity: 0,
-            y: reduced ? 0 : 10,
-          }}
-          animate={{
-            opacity: 1,
-            y: 0,
-          }}
-          exit={{
-            opacity: 0,
-            y: reduced ? 0 : -10,
-          }}
-          transition={{
-            duration: reduced ? 0 : 0.25,
-            ease: EASE,
-          }}
-        >
-          <small>
-            ACCESS / 0{index + 1}
-          </small>
-
-          <h3>{item.name}</h3>
-
-          <p>{item.subtitle}</p>
-
-          <div className="m-ticket-price">
+      <div className="m-ticket-content">
+        <AnimatePresence initial={false}>
+          <motion.div
+            className="m-ticket-info"
+            key={index}
+            initial={{
+              opacity: 0,
+              y: reduced ? 0 : 8,
+            }}
+            animate={{
+              opacity: 1,
+              y: 0,
+            }}
+            exit={{
+              opacity: 0,
+              y: reduced ? 0 : -5,
+            }}
+            transition={{
+              duration: reduced ? 0 : 0.28,
+              opacity: { duration: reduced ? 0 : 0.16 },
+              ease: EASE,
+            }}
+          >
             <small>
-              {item.price === "Custom"
-                ? "TAILORED INVESTMENT"
-                : "INVESTMENT FROM"}
+              ACCESS / 0{index + 1}
             </small>
 
-            <strong>
-              {item.price}
-            </strong>
-          </div>
-        </motion.div>
-      </AnimatePresence>
+            <h3>{item.name}</h3>
+
+            <p>{item.subtitle}</p>
+
+            <div className="m-ticket-price">
+              <small>
+                {item.price === "Custom"
+                  ? "TAILORED INVESTMENT"
+                  : "INVESTMENT FROM"}
+              </small>
+
+              <strong>
+                {item.price}
+              </strong>
+            </div>
+          </motion.div>
+        </AnimatePresence>
+      </div>
 
       <div className="m-ticket-perforation">
         <span />

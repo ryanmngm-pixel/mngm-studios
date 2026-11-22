@@ -380,7 +380,24 @@ export default function ParticleWorld() {
 
     let frame = 0;
 
+    const sectionOpacity = [
+      ["work", 0.4],
+      ["services", 1],
+      ["investment", 0.23],
+      ["contact", 0.6],
+    ].map(([id, opacity]) => ({
+      element: document.getElementById(id),
+      opacity,
+    }));
+
+    const resetPointer = () => {
+      pointer.current.x = 0;
+      pointer.current.y = 0;
+    };
+
     const updatePointer = (event) => {
+      if (event.pointerType !== "mouse") return;
+
       pointer.current.x =
         event.clientX / window.innerWidth * 2 - 1;
 
@@ -390,49 +407,20 @@ export default function ParticleWorld() {
 
     const updateScroll = () => {
       const height = Math.max(window.innerHeight, 1);
-      const y = window.scrollY;
-
-      const clamp = THREE.MathUtils.clamp;
-
-      scroll.current.morph =
-        clamp(y / (height * 1.25), 0, 1);
-
-      let visibility = 0.85;
-
-      const work = document.getElementById("work");
-      const services = document.getElementById("services");
-      const investment = document.getElementById("investment");
-      const contact = document.getElementById("contact");
-
       const center = height * 0.5;
+      const y = window.scrollY;
+      const { clamp, lerp, smoothstep } = THREE.MathUtils;
 
-      const contains = (element) => {
-        if (!element) return false;
+      scroll.current.morph = clamp(y / (height * 1.25), 0, 1);
+      let visibility = lerp(1, 0.85, smoothstep(y, height * 0.6, height));
 
-        const rect = element.getBoundingClientRect();
+      for (const { element, opacity } of sectionOpacity) {
+        if (!element) continue;
 
-        return rect.top <= center &&
-          rect.bottom >= center;
-      };
-
-      if (y < height * 0.75) {
-        visibility = 1;
-      }
-
-      if (contains(work)) {
-        visibility = 0.4;
-      }
-
-      if (contains(services)) {
-        visibility = 1;
-      }
-
-      if (contains(investment)) {
-        visibility = 0.23;
-      }
-
-      if (contains(contact)) {
-        visibility = 0.6;
+        const { top, bottom } = element.getBoundingClientRect();
+        const depth = Math.min(center - top, bottom - center);
+        const blend = smoothstep(depth, 0, height * 0.2);
+        visibility = lerp(visibility, opacity, blend);
       }
 
       scroll.current.visibility = visibility;
@@ -461,6 +449,8 @@ export default function ParticleWorld() {
       updatePointer
     );
 
+    document.documentElement.addEventListener("pointerleave", resetPointer);
+    window.addEventListener("blur", resetPointer);
     window.addEventListener("scroll", onScroll, {
       passive: true,
     });
@@ -484,6 +474,8 @@ export default function ParticleWorld() {
         updatePointer
       );
 
+      document.documentElement.removeEventListener("pointerleave", resetPointer);
+      window.removeEventListener("blur", resetPointer);
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", resize);
 
