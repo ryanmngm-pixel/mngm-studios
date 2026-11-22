@@ -4,6 +4,7 @@ import {
   useRef,
   useState,
   useMemo,
+  useCallback,
 } from "react";
 
 import { createPortal } from "react-dom";
@@ -248,11 +249,7 @@ export function ProjectCover({
   project,
   eager = false,
 }) {
-  const [failed, setFailed] = useState(false);
-
-  useEffect(() => {
-    setFailed(false);
-  }, [project.cover]);
+  const [failedCover, setFailedCover] = useState(null);
 
   return (
     <div
@@ -265,13 +262,13 @@ export function ProjectCover({
           project.background || "#141414",
       }}
     >
-      {project.cover && !failed ? (
+      {project.cover && failedCover !== project.cover ? (
         <img
           src={project.cover}
           alt={`${project.title} website`}
           loading={eager ? "eager" : "lazy"}
           decoding="async"
-          onError={() => setFailed(true)}
+          onError={() => setFailedCover(project.cover)}
         />
       ) : (
         <div className="pw-cover-placeholder">
@@ -289,40 +286,30 @@ export function ProjectCover({
 /* AUTOMATIC BRAND LOGOS */
 
 function BrandLogo({ project }) {
-  const candidates = useMemo(
-    () => getBrandAssets(project),
-    [
-      project.logo,
-      project.website,
-      project.preview,
-    ]
-  );
+  const candidates = useMemo(() => getBrandAssets(project), [project]);
+  const cacheKey = JSON.stringify(candidates);
 
-  const cacheKey = candidates.join("|");
-
-  const [source, setSource] = useState(
-    () => logoCache.get(cacheKey) || ""
+  return (
+    <BrandLogoImage
+      key={cacheKey}
+      project={project}
+      candidates={candidates}
+      cacheKey={cacheKey}
+    />
   );
+}
 
-  const [loading, setLoading] = useState(
-    candidates.length > 0
-  );
+function BrandLogoImage({ project, candidates, cacheKey }) {
+  const [cachedSource] = useState(() => logoCache.get(cacheKey) || "");
+  const [source, setSource] = useState(cachedSource);
+  const [loading, setLoading] = useState(!cachedSource && candidates.length > 0);
 
   useEffect(() => {
+    if (cachedSource || candidates.length === 0) return;
+
     let cancelled = false;
     let currentImage = null;
     let timeout = null;
-
-    const cached = logoCache.get(cacheKey);
-
-    if (cached) {
-      setSource(cached);
-      setLoading(false);
-      return;
-    }
-
-    setSource("");
-    setLoading(candidates.length > 0);
 
     function tryCandidate(index) {
       if (cancelled) return;
@@ -393,7 +380,7 @@ function BrandLogo({ project }) {
         currentImage.onerror = null;
       }
     };
-  }, [candidates, cacheKey]);
+  }, [candidates, cacheKey, cachedSource]);
 
   return (
     <div
@@ -759,19 +746,19 @@ export function BrandCollection({ items }) {
   const trigger = useRef(null);
   const pinned = useRef(false);
 
-  const clearTimers = () => {
+  const clearTimers = useCallback(() => {
     clearTimeout(openTimer.current);
     clearTimeout(closeTimer.current);
-  };
+  }, []);
 
-  const close = () => {
+  const close = useCallback(() => {
     clearTimers();
 
     pinned.current = false;
 
     setActive(null);
     setPosition(null);
-  };
+  }, [clearTimers]);
 
   const activate = (
     project,
@@ -884,7 +871,7 @@ export function BrandCollection({ items }) {
         keyboard
       );
     };
-  }, [active]);
+  }, [active, close]);
 
   return (
     <>

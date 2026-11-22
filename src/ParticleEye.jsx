@@ -133,6 +133,12 @@ export default function ParticleEye({
 
   const data = useMemo(() => {
     const count = mobile ? 26000 : 95000;
+    let seed = 42;
+
+    function random() {
+      seed = (Math.imul(1664525, seed) + 1013904223) >>> 0;
+      return seed / 4294967296;
+    }
 
     const positions = new Float32Array(count * 3);
     const origins = new Float32Array(count * 3);
@@ -141,13 +147,13 @@ export default function ParticleEye({
     const shades = new Float32Array(count);
 
     for (let i = 0; i < count; i++) {
-      const a = Math.random() * Math.PI * 2;
+      const a = random() * Math.PI * 2;
 
       const inner =
         0.73 + Math.sin(a * 7.0) * 0.035;
 
       const r =
-        inner + Math.random() * (2.45 - inner);
+        inner + random() * (2.45 - inner);
 
       const fibers =
         Math.sin(
@@ -165,7 +171,7 @@ export default function ParticleEye({
         0.43 +
         fibers * 0.27 +
         finer * 0.1 +
-        Math.random() * 0.22,
+        random() * 0.22,
         0,
         1
       );
@@ -180,7 +186,7 @@ export default function ParticleEye({
       positions[i * 3 + 1] = Math.sin(a) * r;
       positions[i * 3 + 2] = depth;
 
-      const scatter = 3 + Math.random() * 12;
+      const scatter = 3 + random() * 12;
 
       origins[i * 3] =
         Math.cos(a) * scatter;
@@ -189,9 +195,9 @@ export default function ParticleEye({
         Math.sin(a) * scatter;
 
       origins[i * 3 + 2] =
-        (Math.random() - 0.5) * 12;
+        (random() - 0.5) * 12;
 
-      seeds[i] = Math.random();
+      seeds[i] = random();
       radii[i] = r;
       shades[i] = shade;
     }

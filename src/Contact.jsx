@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import { useState } from "react";
 import "./Contact.css";
 
 const STYLES = [
@@ -112,6 +112,7 @@ export default function Contact() {
     // Demo settings are sent as top-level properties
     // instead of a nested demo object.
     const payload = {
+      website_url: new FormData(event.currentTarget).get("website_url"),
       name: form.name.trim(),
       email: form.email.trim(),
       message: form.message.trim(),
@@ -188,6 +189,7 @@ export default function Contact() {
         </header>
 
         <form className="contact-form" onSubmit={submitForm}>
+          <input type="text" name="website_url" autoComplete="off" tabIndex={-1} hidden />
           <div className="contact-form-heading">
             <div>
               <h2>Tell us about your project.</h2>

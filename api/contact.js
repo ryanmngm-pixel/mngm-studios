@@ -1,4 +1,7 @@
 
+import { Buffer } from "node:buffer";
+import process from "node:process";
+
 const RESEND_API_URL = "https://api.resend.com/emails";
 
 const MAX_BODY_BYTES = 20_000;
@@ -41,21 +44,27 @@ export default async function handler(req, res) {
     });
   }
 
-  if (!process.env.RESEND_API_KEY) {
-    console.error("Missing RESEND_API_KEY");
+  let body = req.body;
 
-    return res.status(500).json({
-      success: false,
-      error: "Email service is not configured.",
-    });
+  if (typeof body === "string") {
+    if (Buffer.byteLength(body, "utf8") > MAX_BODY_BYTES) {
+      return res.status(413).json({
+        success: false,
+        error: "Submission is too large.",
+      });
+    }
+
+    try {
+      body = JSON.parse(body);
+    } catch {
+      return res.status(400).json({
+        success: false,
+        error: "Invalid submission.",
+      });
+    }
   }
 
   try {
-    const body =
-      typeof req.body === "string"
-        ? JSON.parse(req.body)
-        : req.body;
-
     if (
       !body ||
       typeof body !== "object" ||
@@ -130,6 +139,15 @@ export default async function handler(req, res) {
       return res.status(400).json({
         success: false,
         error: "Please enter a valid email address.",
+      });
+    }
+
+    if (!process.env.RESEND_API_KEY) {
+      console.error("Missing RESEND_API_KEY");
+
+      return res.status(500).json({
+        success: false,
+        error: "Email service is not configured.",
       });
     }
 

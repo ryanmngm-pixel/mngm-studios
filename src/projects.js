@@ -14,7 +14,6 @@ export const projects = [
     background: "#e8e1d5",
 
     logo: "https://guatemalachildrensproject.org/wp-content/uploads/2023/01/GCP-Logo-White-Circle150.png",
-    cover: "/projects/gcp.png",
     website: "https://guatemalachildrensproject.org",
 
     tagline: "Designed around a greater purpose.",
@@ -53,7 +52,6 @@ export const projects = [
     background: "#101114",
 
     logo: "https://www.mylynkr.com/images/mylynkr-logo.png",
-    cover: "/projects/mylynkr.png",
     website: "https://mylynkr.com",
 
     tagline: "A more connected world.",
