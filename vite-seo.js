@@ -2,7 +2,7 @@ import { mkdir, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { projects } from "./src/projects.js";
 
-const origin = "https://mngmstudios.com";
+const origin = "https://www.mngmstudios.com";
 const name = "MNGM Studios";
 const socialImage = origin + "/mngm-social.png";
 

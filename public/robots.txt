@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://mngmstudios.com/sitemap.xml
+Sitemap: https://www.mngmstudios.com/sitemap.xml
