@@ -1,5 +1,4 @@
 
-import { useEffect } from "react";
 
 import {
   ArrowUpRight,
@@ -95,12 +94,6 @@ function safeWebsite(value) {
 export default function Project({ slug }) {
   const project = getProject(slug);
   const reduced = useReducedMotion();
-
-  useEffect(() => {
-    document.title = project
-      ? `${project.title} — MNGM Studios`
-      : "Project not found — MNGM Studios";
-  }, [project]);
 
   if (!project) {
     return (

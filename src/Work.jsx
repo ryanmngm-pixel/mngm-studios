@@ -1035,11 +1035,6 @@ export function PortfolioCTA() {
 export default function Work() {
   const reduced = useReducedMotion();
 
-  useEffect(() => {
-    document.title =
-      "Our Work — MNGM Studios";
-  }, []);
-
   return (
     <div className="pw-site">
       <ParticleWorld />

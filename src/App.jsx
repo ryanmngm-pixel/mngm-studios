@@ -1131,9 +1131,6 @@ function Footer() {
 
 function Homepage() {
   useEffect(() => {
-    document.title =
-      "MNGM Studios — Beyond Ordinary";
-
     let frame;
 
     const scrollToSection = () => {
@@ -1184,11 +1181,6 @@ function Homepage() {
 }
 
 function NotFound() {
-  useEffect(() => {
-    document.title =
-      "Page not found — MNGM Studios";
-  }, []);
-
   return (
     <div className="m-site">
       <Header />
