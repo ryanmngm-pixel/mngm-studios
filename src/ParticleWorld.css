@@ -8,7 +8,7 @@
   overflow: hidden;
   pointer-events: none;
   isolation: isolate;
-  background: #080808;
+  background: var(--night, #06070c);
 }
 
 .m-particle-world canvas {
@@ -24,12 +24,12 @@
   background:
     radial-gradient(
       ellipse at 74% 48%,
-      rgba(104, 39, 19, 0.12),
+      rgba(46, 59, 137, 0.12),
       transparent 58%
     ),
     radial-gradient(
       ellipse at 42% 95%,
-      rgba(86, 39, 24, 0.09),
+      rgba(48, 54, 109, 0.09),
       transparent 65%
     );
 }
@@ -41,15 +41,15 @@
   background:
     linear-gradient(
       90deg,
-      rgba(8, 8, 8, 0.4),
+      rgba(6, 7, 12, 0.4),
       transparent 80%
     ),
     linear-gradient(
       180deg,
-      rgba(8, 8, 8, 0.15),
+      rgba(6, 7, 12, 0.15),
       transparent 40%,
       transparent 85%,
-      rgba(8, 8, 8, 0.3)
+      rgba(6, 7, 12, 0.3)
     );
 }
 
@@ -57,7 +57,7 @@
   .m-particle-ambient {
     background: radial-gradient(
       ellipse at 50% 30%,
-      rgba(104, 39, 19, 0.17),
+      rgba(46, 59, 137, 0.17),
       transparent 65%
     );
   }
@@ -65,7 +65,7 @@
   .m-particle-vignette {
     background: linear-gradient(
       0deg,
-      rgba(8, 8, 8, 0.55),
+      rgba(6, 7, 12, 0.55),
       transparent 90%
     );
   }

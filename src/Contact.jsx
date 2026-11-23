@@ -1,5 +1,6 @@
 
 import { useState } from "react";
+import { SiteHeader, SiteFooter } from "./SiteChrome";
 import "./Contact.css";
 
 const STYLES = [
@@ -26,7 +27,7 @@ const STYLES = [
 ];
 
 const COLORS = [
-  "#FF784F",
+  "#A5B2FF",
   "#4285F4",
   "#22B88B",
   "#9B6DFF",
@@ -77,7 +78,7 @@ export default function Contact() {
 
   const [includeDemo, setIncludeDemo] = useState(false);
   const [style, setStyle] = useState("minimal");
-  const [color, setColor] = useState("#FF784F");
+  const [color, setColor] = useState("#A5B2FF");
   const [customColor, setCustomColor] = useState(false);
   const [previewMode, setPreviewMode] = useState("desktop");
 
@@ -148,7 +149,7 @@ export default function Contact() {
       // Reset the builder after a successful submission.
       setIncludeDemo(false);
       setStyle("minimal");
-      setColor("#FF784F");
+      setColor("#A5B2FF");
       setCustomColor(false);
       setPreviewMode("desktop");
     } catch (err) {
@@ -162,29 +163,17 @@ export default function Contact() {
   };
 
   return (
-    <main className="mngm-contact">
+    <div className="mngm-contact">
+      <SiteHeader />
       <div className="contact-glow" aria-hidden="true" />
 
-      <div className="contact-container">
-        <a href="/" className="contact-back">
-          <span>←</span> Back to MNGM Studios
-        </a>
-
+      <main className="contact-container" id="top">
         <header className="contact-header">
-          <div className="contact-eyebrow">
-            <span className="contact-status-dot" />
-            MNGM STUDIOS / CONTACT
-          </div>
-
-          <h1>
-            Let's make
-            <br />
-            <span>something happen.</span>
-          </h1>
+          <h1>Let's make something happen.</h1>
 
           <p>
-            Have an idea, a project, or something ambitious in mind?
-            Tell us about it. We'll take it from there.
+            Have an idea, a project, or something ambitious in mind? Tell us about it, and we'll come back
+            with thoughts, a plan, and a clear price.
           </p>
         </header>
 
@@ -196,9 +185,6 @@ export default function Contact() {
               <p>Start with the basics. We'll handle the rest.</p>
             </div>
 
-            <span className="contact-form-step">
-              01 / INQUIRY
-            </span>
           </div>
 
           <div className="contact-field-row">
@@ -566,16 +552,9 @@ export default function Contact() {
           )}
         </form>
 
-        <footer className="contact-footer">
-          <span>
-            © {new Date().getFullYear()} MNGM STUDIOS
-          </span>
+      </main>
 
-          <span>
-            CREATIVE THINKING. REAL EXECUTION.
-          </span>
-        </footer>
-      </div>
-    </main>
+      <SiteFooter />
+    </div>
   );
 }

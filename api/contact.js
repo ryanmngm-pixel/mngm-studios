@@ -168,14 +168,14 @@ export default async function handler(req, res) {
         <body style="margin:0;padding:32px;background:#101010;font-family:Arial,Helvetica,sans-serif;color:#f7f7f7;">
           <div style="max-width:620px;margin:0 auto;">
             <div style="font-size:26px;font-weight:900;letter-spacing:-1px;">
-              MNGM<span style="color:#FF784F;">.</span>
+              MNGM<span style="color:#A5B2FF;">.</span>
             </div>
 
             <p style="font-size:11px;letter-spacing:3px;color:#999;">
               STUDIOS / NEW PROJECT INQUIRY
             </p>
 
-            <div style="height:2px;background:#FF784F;margin:24px 0 32px;"></div>
+            <div style="height:2px;background:#A5B2FF;margin:24px 0 32px;"></div>
 
             <h1 style="font-size:32px;letter-spacing:-1px;margin:0 0 24px;">
               You've got a new inquiry.
@@ -187,7 +187,7 @@ export default async function handler(req, res) {
 
               <p style="color:#999;font-size:12px;">EMAIL</p>
               <p>
-                <a href="mailto:${safeEmail}" style="color:#FF784F;">
+                <a href="mailto:${safeEmail}" style="color:#A5B2FF;">
                   ${safeEmail}
                 </a>
               </p>

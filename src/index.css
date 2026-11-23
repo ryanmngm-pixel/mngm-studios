@@ -1,9 +1,65 @@
+/*
+  MNGM Studios design tokens.
+  Night-sky palette taken from the particle field: deep blue-black space,
+  bone-white type, and the periwinkle "halo" from the MNGM mark.
+*/
 
-* {
+:root {
+  --night: #06070c;
+  --night-2: #0b0d15;
+  --surface: #10131d;
+  --line: rgba(232, 234, 245, 0.1);
+  --line-strong: rgba(232, 234, 245, 0.2);
+  --bone: #eeede8;
+  --ash: #a3a2ab;
+  --ash-dim: #6f6e78;
+  --halo: #a5b2ff;
+  --halo-soft: #d4daff;
+  --halo-glow: rgba(165, 178, 255, 0.32);
+
+  --font-display: "Bricolage Grotesque", "Helvetica Neue", Arial, sans-serif;
+  --font-body: "Geist", "Helvetica Neue", Arial, sans-serif;
+
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --gutter: clamp(20px, 4.4vw, 72px);
+  --max: 1440px;
+  --section: clamp(96px, 12vw, 176px);
+
+  /* Type scale (perfect fourth, fluid at the top end) */
+  --t-xs: 0.8125rem;
+  --t-sm: 0.9375rem;
+  --t-md: 1.0625rem;
+  --t-lg: clamp(1.1875rem, 1.1vw + 0.85rem, 1.5rem);
+  --t-xl: clamp(1.75rem, 2.2vw + 1rem, 2.75rem);
+  --t-2xl: clamp(2.5rem, 4.6vw + 0.75rem, 5.25rem);
+  --t-hero: clamp(3.75rem, 10.5vw, 11.5rem);
+
+  font-family: var(--font-body);
+  font-size: 100%;
+  line-height: 1.55;
+  color: var(--bone);
+  background: var(--night);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  color-scheme: dark;
+}
+
+*,
+*::before,
+*::after {
   box-sizing: border-box;
 }
 
-html, body, #root {
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 110px;
+}
+
+html,
+body,
+#root {
   margin: 0;
   padding: 0;
   width: 100%;
@@ -11,9 +67,29 @@ html, body, #root {
 }
 
 body {
+  min-width: 320px;
   overflow-x: hidden;
+  background: var(--night);
 }
 
-button, input {
+button,
+input,
+textarea,
+select {
   font-family: inherit;
+}
+
+img {
+  max-width: 100%;
+}
+
+::selection {
+  background: var(--halo);
+  color: var(--night);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
 }

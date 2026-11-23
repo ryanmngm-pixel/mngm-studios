@@ -124,21 +124,21 @@ const fragmentShader = `
     float shape =
       1.0 - smoothstep(0.06, 0.5, d);
 
-    vec3 coral = vec3(1.0, 0.37, 0.20);
-    vec3 amber = vec3(0.61, 0.24, 0.12);
+    vec3 iris = vec3(0.51, 0.59, 1.0);
+    vec3 indigo = vec3(0.25, 0.31, 0.65);
     vec3 silver = vec3(0.68, 0.66, 0.63);
 
     vec3 vortexColor =
-      mix(amber, coral, vSeed);
+      mix(indigo, iris, vSeed);
 
     vortexColor = mix(
       vortexColor,
-      vec3(1.0, 0.78, 0.62),
+      vec3(0.78, 0.83, 1.0),
       pow(vSeed, 9.0) * 0.75
     );
 
     vec3 waveColor =
-      mix(silver, coral, smoothstep(
+      mix(silver, iris, smoothstep(
         0.4, 0.95, vSeed
       ));
 
@@ -381,10 +381,12 @@ export default function ParticleWorld() {
     let frame = 0;
 
     const sectionOpacity = [
-      ["work", 0.4],
-      ["services", 1],
-      ["investment", 0.23],
-      ["contact", 0.6],
+      ["studio", 0.55],
+      ["work", 0.35],
+      ["services", 0.5],
+      ["process", 0.4],
+      ["investment", 0.28],
+      ["contact", 0.9],
     ].map(([id, opacity]) => ({
       element: document.getElementById(id),
       opacity,

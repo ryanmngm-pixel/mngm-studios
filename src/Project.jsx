@@ -17,7 +17,7 @@ import {
   PortfolioHeader,
   PortfolioFooter,
   PortfolioCTA,
-  ProjectCover,
+  SiteFrame,
 } from "./Work";
 
 import {
@@ -35,7 +35,7 @@ function CaseSection({ number, title, children }) {
   return (
     <section className="pc-case-section">
       <div className="pc-case-label">
-        {number} / {title.toUpperCase()}
+        {number}  {title}
       </div>
 
       <div>
@@ -146,9 +146,7 @@ export default function Project({ slug }) {
               </a>
 
               <span>
-                PROJECT /
-                {" "}
-                {String(index + 1).padStart(3, "0")}
+                Project {index + 1} of {projects.length}
               </span>
             </div>
 
@@ -168,9 +166,7 @@ export default function Project({ slug }) {
             >
               <div className="pw-label">
                 <span />
-                {project.category.toUpperCase()}
-                {" / "}
-                {project.year}
+                {project.category}, {project.year}
               </div>
 
               <h1>
@@ -184,7 +180,7 @@ export default function Project({ slug }) {
             </motion.div>
 
             <div className="pc-hero-cover">
-              <ProjectCover
+              <SiteFrame
                 project={project}
                 eager
               />
