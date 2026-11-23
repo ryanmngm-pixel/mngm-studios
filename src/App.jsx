@@ -8,7 +8,7 @@ import WorkPage, { FeaturedWork } from "./Work";
 import Project from "./Project";
 import { SiteHeader, SiteFooter } from "./SiteChrome";
 import { Magnetic, Tilt } from "./Depth";
-import { EASE } from "./site";
+import { EASE, LITE } from "./site";
 
 import "./ParticleWorld.css";
 import "./App.css";
@@ -139,7 +139,13 @@ function Hero() {
     <section id="top" className="m-hero" ref={section}>
       <motion.div
         className="m-container m-hero-inner"
-        style={reduced ? undefined : { scale: depthScale, y: depthY, opacity: depthOpacity, filter: depthBlur }}
+        style={
+          reduced
+            ? undefined
+            : LITE
+              ? { y: depthY, opacity: depthOpacity }
+              : { scale: depthScale, y: depthY, opacity: depthOpacity, filter: depthBlur }
+        }
       >
         <motion.p className="m-hero-kicker" {...fade(0.1)}>
           <span className="m-pulse" aria-hidden="true" />
@@ -148,7 +154,7 @@ function Hero() {
 
         <motion.h1
           className="m-hero-title"
-          style={reduced ? undefined : { rotateX, rotateY, transformPerspective: 1200 }}
+          style={reduced || LITE ? undefined : { rotateX, rotateY, transformPerspective: 1200 }}
         >
           {lines.map((line, index) => (
             <span className="m-mask" key={line}>

@@ -324,3 +324,22 @@
     flex-direction: column;
   }
 }
+
+/* Phones and tablets: blur over the moving 3D scene is expensive, so use solid fills */
+@media (hover: none), (max-width: 859px) {
+  .sc-header.is-scrolled .sc-header-inner,
+  .sc-mobile-menu {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+
+  .sc-header.is-scrolled .sc-header-inner {
+    background: rgba(11, 13, 21, 0.94);
+  }
+
+  .sc-mobile-menu {
+    background:
+      radial-gradient(ellipse at 80% 10%, rgba(165, 178, 255, 0.14), transparent 55%),
+      var(--night);
+  }
+}

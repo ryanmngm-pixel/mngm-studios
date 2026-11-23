@@ -4,7 +4,7 @@ import { ArrowUpRight, ArrowRight } from "lucide-react";
 
 import ParticleWorld from "./ParticleWorld";
 import { SiteHeader, SiteFooter } from "./SiteChrome";
-import { EASE } from "./site";
+import { EASE, LITE } from "./site";
 import { Tilt } from "./Depth";
 import { projects, getFeaturedProjects } from "./projects";
 import { getBrandAssets, getBrandInitials } from "./brandAssets";
@@ -290,7 +290,7 @@ function DepthFrame({ project, flip }) {
     <motion.div
       ref={ref}
       className="pw-depth"
-      style={reduced ? undefined : { rotateX, rotateY, scale, opacity, transformPerspective: 1400 }}
+      style={reduced ? undefined : LITE ? { opacity } : { rotateX, rotateY, scale, opacity, transformPerspective: 1400 }}
     >
       <Tilt className="pw-tilt" track=".pw-card" max={6}>
         <SiteFrame project={project} />

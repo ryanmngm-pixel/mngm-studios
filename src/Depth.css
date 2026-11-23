@@ -3,7 +3,12 @@
 .d-tilt {
   position: relative;
   transform-style: preserve-3d;
-  will-change: transform;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .d-tilt {
+    will-change: transform;
+  }
 }
 
 .d-tilt-glare {

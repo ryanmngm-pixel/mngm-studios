@@ -1,6 +1,8 @@
 import { Component, useEffect, useMemo, useRef, useState } from "react";
-import { Canvas, useFrame } from "@react-three/fiber";
+import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import * as THREE from "three";
+
+import { LITE } from "./site";
 
 /*
   One particle body travels with the visitor through the page.
@@ -37,6 +39,7 @@ const vertexShader = /* glsl */ `
   uniform float uAspect;
   uniform float uVelocity;
   uniform float uVisibility;
+  uniform float uBoost;
   uniform vec2 uMouse;
   uniform vec2 uMouseVel;
   uniform float uMouseActive;
@@ -242,7 +245,7 @@ const vertexShader = /* glsl */ `
     vSeed = aSeed;
     vSilver = mix(silver(uFrom), silver(uTo), m);
     vGlow = glow;
-    vFade = far * near * uVisibility;
+    vFade = far * near * uVisibility * uBoost;
   }
 `;
 
@@ -320,7 +323,7 @@ function buildParticles(count) {
 
 function ParticleField({ mobile, inputRef }) {
   const material = useRef();
-  const data = useMemo(() => buildParticles(mobile ? 32000 : 110000), [mobile]);
+  const data = useMemo(() => buildParticles(mobile ? (LITE ? 14000 : 24000) : LITE ? 60000 : 110000), [mobile]);
   const projector = useMemo(() => new THREE.Vector3(), []);
 
   const uniforms = useMemo(
@@ -335,6 +338,7 @@ function ParticleField({ mobile, inputRef }) {
       uAspect: { value: 1 },
       uVelocity: { value: 0 },
       uVisibility: { value: 1 },
+      uBoost: { value: 1 },
       uMouse: { value: new THREE.Vector2(9, 9) },
       uMouseVel: { value: new THREE.Vector2() },
       uMouseActive: { value: 0 },
@@ -372,6 +376,8 @@ function ParticleField({ mobile, inputRef }) {
     u.uSpin.value = s.spin + u.uTime.value * 0.06;
     u.uDpr.value = state.gl.getPixelRatio();
     u.uMobile.value = mobile ? 1 : 0;
+    // Fewer particles on phones, so each one shines a little brighter
+    u.uBoost.value = mobile && LITE ? 1.45 : 1;
     u.uAspect.value = state.size.width / Math.max(state.size.height, 1);
 
     const brightness = THREE.MathUtils.lerp(sequence[from][2], sequence[to][2], mix);
@@ -429,6 +435,28 @@ function ParticleField({ mobile, inputRef }) {
       />
     </points>
   );
+}
+
+/* On phones, draw the scene at ~30fps so scrolling and touch stay smooth. */
+function FrameLimiter({ fps }) {
+  const invalidate = useThree((state) => state.invalidate);
+
+  useEffect(() => {
+    let frame = 0;
+    let last = 0;
+    const interval = 1000 / fps;
+    const tick = (time) => {
+      if (time - last >= interval - 2) {
+        last = time;
+        invalidate();
+      }
+      frame = requestAnimationFrame(tick);
+    };
+    frame = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(frame);
+  }, [fps, invalidate]);
+
+  return null;
 }
 
 class GraphicsBoundary extends Component {
@@ -522,7 +550,7 @@ export default function ParticleWorld() {
       }
 
       state.spin = y * 0.0016;
-      state.velocity = clamp(state.velocity + (y - lastY) * 0.02, -2.5, 2.5);
+      state.velocity = clamp(state.velocity + (y - lastY) * (LITE ? 0.008 : 0.02), -2.5, 2.5);
       lastY = y;
     };
 
@@ -531,7 +559,11 @@ export default function ParticleWorld() {
       frame = requestAnimationFrame(updateScroll);
     };
 
+    // Phones fire resize whenever the address bar shows or hides; only react to width changes
+    let lastWidth = window.innerWidth;
     const resize = () => {
+      if (window.innerWidth === lastWidth) return;
+      lastWidth = window.innerWidth;
       setMobile(window.innerWidth < 768);
       onScroll();
     };
@@ -571,13 +603,14 @@ export default function ParticleWorld() {
       {!reduced && (
         <GraphicsBoundary>
           <Canvas
-            dpr={[1, mobile ? 1.15 : 1.5]}
-            frameloop={visible ? "always" : "never"}
+            dpr={LITE ? 1 : [1, 1.5]}
+            frameloop={!visible ? "never" : LITE ? "demand" : "always"}
             camera={{ position: [0, 0, mobile ? 13 : 11], fov: 48, near: 0.1, far: 100 }}
             gl={{ alpha: true, antialias: false, powerPreference: "high-performance" }}
             fallback={null}
           >
             <ParticleField mobile={mobile} inputRef={input} />
+            {LITE && visible && <FrameLimiter fps={30} />}
           </Canvas>
         </GraphicsBoundary>
       )}

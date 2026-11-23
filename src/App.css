@@ -680,3 +680,20 @@
     animation: none;
   }
 }
+
+/* Phones and tablets: no glass blur over the moving 3D scene */
+@media (hover: none), (max-width: 859px) {
+  .m-button--ghost,
+  .m-plan {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+
+  .m-button--ghost {
+    background: rgba(11, 13, 21, 0.7);
+  }
+
+  .m-plan {
+    background: linear-gradient(180deg, rgba(16, 19, 29, 0.96), rgba(11, 13, 21, 0.96));
+  }
+}
