@@ -1,10 +1,11 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
+import { motion, AnimatePresence, useReducedMotion, useScroll, useTransform } from "framer-motion";
 import { ArrowUpRight, ArrowRight } from "lucide-react";
 
 import ParticleWorld from "./ParticleWorld";
 import { SiteHeader, SiteFooter } from "./SiteChrome";
 import { EASE } from "./site";
+import { Tilt } from "./Depth";
 import { projects, getFeaturedProjects } from "./projects";
 import { getBrandAssets, getBrandInitials } from "./brandAssets";
 
@@ -275,6 +276,29 @@ export function SiteFrame({ project, eager = false }) {
 
 /* PROJECT CARD */
 
+/* The frame swings up out of the page as it scrolls into view. */
+function DepthFrame({ project, flip }) {
+  const reduced = useReducedMotion();
+  const ref = useRef(null);
+  const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "center 0.6"] });
+  const rotateX = useTransform(scrollYProgress, [0, 1], [32, 0]);
+  const rotateY = useTransform(scrollYProgress, [0, 1], [flip ? 10 : -10, 0]);
+  const scale = useTransform(scrollYProgress, [0, 1], [0.84, 1]);
+  const opacity = useTransform(scrollYProgress, [0, 0.45], [0, 1]);
+
+  return (
+    <motion.div
+      ref={ref}
+      className="pw-depth"
+      style={reduced ? undefined : { rotateX, rotateY, scale, opacity, transformPerspective: 1400 }}
+    >
+      <Tilt className="pw-tilt" track=".pw-card" max={6}>
+        <SiteFrame project={project} />
+      </Tilt>
+    </motion.div>
+  );
+}
+
 export function ProjectCard({ project, index = 0, layout = "grid" }) {
   const reduced = useReducedMotion();
   const website = validURL(project.website);
@@ -282,12 +306,13 @@ export function ProjectCard({ project, index = 0, layout = "grid" }) {
   return (
     <motion.article
       className={`pw-card pw-card--${layout}`}
-      initial={reduced ? false : { opacity: 0, y: 40 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, amount: 0.2 }}
+      data-cursor="View project"
+      initial={reduced ? false : { opacity: 0 }}
+      whileInView={{ opacity: 1 }}
+      viewport={{ once: true, amount: 0.1 }}
       transition={{ duration: reduced ? 0 : 0.9, delay: reduced ? 0 : index * 0.08, ease: EASE }}
     >
-      <SiteFrame project={project} />
+      <DepthFrame project={project} flip={layout === "feature-flip" || index % 2 === 1} />
 
       <div className="pw-card-body">
         <div className="pw-card-heading">
@@ -318,6 +343,7 @@ export function ProjectCard({ project, index = 0, layout = "grid" }) {
           {website && (
             <a
               className="pw-card-visit"
+              data-cursor="Visit site"
               href={website.href}
               target="_blank"
               rel="noopener noreferrer"

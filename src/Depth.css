@@ -1,0 +1,95 @@
+/* 3D interaction layer */
+
+.d-tilt {
+  position: relative;
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+
+.d-tilt-glare {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0;
+  background: radial-gradient(
+    circle at var(--lx, 50%) var(--ly, 50%),
+    rgba(212, 218, 255, 0.16),
+    transparent 45%
+  );
+  mix-blend-mode: screen;
+  transition: opacity 0.5s var(--ease);
+}
+
+.d-tilt:hover .d-tilt-glare {
+  opacity: 1;
+}
+
+.d-magnetic {
+  display: inline-block;
+}
+
+/* Cursor halo */
+
+.d-cursor {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+  pointer-events: none;
+}
+
+.d-cursor-ring {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 1px solid rgba(212, 218, 255, 0.45);
+  background: radial-gradient(circle, rgba(165, 178, 255, 0.1), transparent 70%);
+  translate: -50% -50%;
+  opacity: 0;
+  scale: 0.6;
+  transition:
+    opacity 0.3s,
+    scale 0.45s var(--ease),
+    width 0.45s var(--ease),
+    height 0.45s var(--ease),
+    background 0.3s,
+    border-color 0.3s;
+}
+
+.d-cursor.is-visible .d-cursor-ring {
+  opacity: 1;
+  scale: 1;
+}
+
+.d-cursor.is-hover .d-cursor-ring {
+  width: 56px;
+  height: 56px;
+  border-color: rgba(212, 218, 255, 0.7);
+  background: radial-gradient(circle, rgba(165, 178, 255, 0.16), transparent 70%);
+}
+
+.d-cursor.has-label .d-cursor-ring {
+  width: 96px;
+  height: 96px;
+  border-color: transparent;
+  background: var(--bone);
+  box-shadow: 0 10px 40px -8px var(--halo-glow);
+}
+
+.d-cursor.is-down .d-cursor-ring {
+  scale: 0.82;
+}
+
+.d-cursor-label {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--night);
+  white-space: nowrap;
+}

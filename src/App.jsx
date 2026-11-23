@@ -1,5 +1,5 @@
-import { useEffect } from "react";
-import { motion, useReducedMotion } from "framer-motion";
+import { useEffect, useRef } from "react";
+import { motion, useMotionValue, useReducedMotion, useScroll, useSpring, useTransform } from "framer-motion";
 import { ArrowUpRight, ArrowDown, ArrowRight, Check, Globe, Code2, Layers3, Fingerprint } from "lucide-react";
 
 import ParticleWorld from "./ParticleWorld";
@@ -7,6 +7,7 @@ import ContactPage from "./Contact";
 import WorkPage, { FeaturedWork } from "./Work";
 import Project from "./Project";
 import { SiteHeader, SiteFooter } from "./SiteChrome";
+import { Magnetic, Tilt } from "./Depth";
 import { EASE } from "./site";
 
 import "./ParticleWorld.css";
@@ -102,6 +103,31 @@ function SectionHeading({ title, children, aside }) {
 function Hero() {
   const reduced = useReducedMotion();
   const lines = ["Beyond", "ordinary."];
+  const section = useRef(null);
+
+  // Scrolling away flies the hero back into the scene
+  const { scrollYProgress } = useScroll({ target: section, offset: ["start start", "end start"] });
+  const depthScale = useTransform(scrollYProgress, [0, 1], [1, 0.82]);
+  const depthY = useTransform(scrollYProgress, [0, 1], [0, -90]);
+  const depthOpacity = useTransform(scrollYProgress, [0, 0.75], [1, 0]);
+  const depthBlur = useTransform(scrollYProgress, [0.2, 0.8], ["blur(0px)", "blur(8px)"]);
+
+  // The headline leans toward the cursor
+  const px = useMotionValue(0);
+  const py = useMotionValue(0);
+  const rotateY = useSpring(useTransform(px, [-1, 1], [-7, 7]), { stiffness: 90, damping: 20 });
+  const rotateX = useSpring(useTransform(py, [-1, 1], [6, -6]), { stiffness: 90, damping: 20 });
+
+  useEffect(() => {
+    if (reduced) return;
+    const move = (event) => {
+      if (event.pointerType !== "mouse") return;
+      px.set((event.clientX / window.innerWidth) * 2 - 1);
+      py.set((event.clientY / window.innerHeight) * 2 - 1);
+    };
+    window.addEventListener("pointermove", move, { passive: true });
+    return () => window.removeEventListener("pointermove", move);
+  }, [reduced, px, py]);
 
   const fade = (delay) => ({
     initial: reduced ? false : { opacity: 0, y: 18 },
@@ -110,26 +136,33 @@ function Hero() {
   });
 
   return (
-    <section id="top" className="m-hero">
-      <div className="m-container m-hero-inner">
+    <section id="top" className="m-hero" ref={section}>
+      <motion.div
+        className="m-container m-hero-inner"
+        style={reduced ? undefined : { scale: depthScale, y: depthY, opacity: depthOpacity, filter: depthBlur }}
+      >
         <motion.p className="m-hero-kicker" {...fade(0.1)}>
           <span className="m-pulse" aria-hidden="true" />
           Independent web studio in Utah
         </motion.p>
 
-        <h1 className="m-hero-title">
+        <motion.h1
+          className="m-hero-title"
+          style={reduced ? undefined : { rotateX, rotateY, transformPerspective: 1200 }}
+        >
           {lines.map((line, index) => (
             <span className="m-mask" key={line}>
               <motion.span
-                initial={reduced ? false : { y: "110%" }}
-                animate={{ y: 0 }}
+                style={{ transformPerspective: 700, transformOrigin: "50% 100%" }}
+                initial={reduced ? false : { y: "110%", rotateX: -40 }}
+                animate={{ y: 0, rotateX: 0 }}
                 transition={{ duration: reduced ? 0 : 1.15, delay: reduced ? 0 : 0.15 + index * 0.12, ease: EASE }}
               >
                 {line}
               </motion.span>
             </span>
           ))}
-        </h1>
+        </motion.h1>
 
         <div className="m-hero-foot">
           <motion.p className="m-hero-lede" {...fade(0.55)}>
@@ -137,15 +170,19 @@ function Hero() {
           </motion.p>
 
           <motion.div className="m-hero-actions" {...fade(0.68)}>
-            <a href="/contact" className="m-button">
-              Start a project <ArrowUpRight size={18} strokeWidth={1.75} aria-hidden="true" />
-            </a>
-            <a href="#work" className="m-button m-button--ghost">
-              See our work
-            </a>
+            <Magnetic>
+              <a href="/contact" className="m-button">
+                Start a project <ArrowUpRight size={18} strokeWidth={1.75} aria-hidden="true" />
+              </a>
+            </Magnetic>
+            <Magnetic>
+              <a href="#work" className="m-button m-button--ghost">
+                See our work
+              </a>
+            </Magnetic>
           </motion.div>
         </div>
-      </div>
+      </motion.div>
 
       <motion.a
         href="#studio"
@@ -157,7 +194,64 @@ function Hero() {
       >
         <ArrowDown size={18} strokeWidth={1.5} />
       </motion.a>
+
+      <motion.p
+        className="m-hero-hint"
+        aria-hidden="true"
+        initial={reduced ? false : { opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: reduced ? 0 : 1, delay: reduced ? 0 : 1.6 }}
+      >
+        Click anywhere to send a ripple
+      </motion.p>
     </section>
+  );
+}
+
+const STATEMENT = [
+  ["Your website is often the first conversation a customer has with your business.", false],
+  ["We make sure it's one they remember.", true],
+];
+
+function StatementWord({ word, progress, start, end, quiet }) {
+  const opacity = useTransform(progress, [start, end], [0.14, 1]);
+  const y = useTransform(progress, [start, end], ["0.18em", "0em"]);
+  return (
+    <motion.span className={quiet ? "is-quiet" : undefined} style={{ opacity, y }}>
+      {word}{" "}
+    </motion.span>
+  );
+}
+
+/* Words light up one by one as the visitor scrolls through the statement. */
+function Statement() {
+  const reduced = useReducedMotion();
+  const ref = useRef(null);
+  const { scrollYProgress } = useScroll({ target: ref, offset: ["start 0.85", "end 0.45"] });
+
+  const words = STATEMENT.flatMap(([text, quiet]) => text.split(" ").map((word) => ({ word, quiet })));
+
+  if (reduced) {
+    return (
+      <p className="m-statement">
+        {STATEMENT[0][0]} <span className="is-quiet">{STATEMENT[1][0]}</span>
+      </p>
+    );
+  }
+
+  return (
+    <p className="m-statement" ref={ref}>
+      {words.map(({ word, quiet }, index) => (
+        <StatementWord
+          key={index}
+          word={word}
+          quiet={quiet}
+          progress={scrollYProgress}
+          start={index / words.length}
+          end={(index + 1.5) / words.length}
+        />
+      ))}
+    </p>
   );
 }
 
@@ -165,10 +259,7 @@ function Studio() {
   return (
     <section id="studio" className="m-section m-studio">
       <div className="m-container">
-        <Reveal as="p" className="m-statement">
-          Your website is often the first conversation a customer has with your business.{" "}
-          <span>We make sure it's one they remember.</span>
-        </Reveal>
+        <Statement />
 
         <div className="m-studio-grid">
           <Reveal className="m-studio-col" delay={0.05}>
@@ -274,7 +365,8 @@ function Pricing() {
 
         <div className="m-plans">
           {PACKAGES.map((plan, index) => (
-            <Reveal key={plan.name} className={`m-plan ${plan.highlight ? "is-highlight" : ""}`} delay={index * 0.08}>
+            <Reveal key={plan.name} className="m-plan-slot" delay={index * 0.08}>
+              <Tilt className={`m-plan ${plan.highlight ? "is-highlight" : ""}`} max={7}>
               <div className="m-plan-top">
                 <h3>{plan.name}</h3>
                 <p>{plan.description}</p>
@@ -298,6 +390,7 @@ function Pricing() {
                 {plan.price === "Custom" ? "Request a quote" : `Start with ${plan.name}`}
                 <ArrowUpRight size={17} strokeWidth={1.75} aria-hidden="true" />
               </a>
+              </Tilt>
             </Reveal>
           ))}
         </div>
@@ -316,9 +409,11 @@ function Closing() {
 
         <Reveal className="m-closing-foot" delay={0.12}>
           <p>Tell us about your idea. We'll come back with thoughts, a plan, and a clear price.</p>
-          <a href="/contact" className="m-button m-button--large">
-            Start a project <ArrowUpRight size={20} strokeWidth={1.75} aria-hidden="true" />
-          </a>
+          <Magnetic strength={0.35}>
+            <a href="/contact" className="m-button m-button--large">
+              Start a project <ArrowUpRight size={20} strokeWidth={1.75} aria-hidden="true" />
+            </a>
+          </Magnetic>
         </Reveal>
       </div>
     </section>

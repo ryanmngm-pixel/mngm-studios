@@ -175,8 +175,16 @@
   gap: clamp(28px, 4vw, 64px);
 }
 
-.pw-card--feature-flip .pw-frame {
+.pw-card--feature-flip .pw-depth {
   order: 2;
+}
+
+.pw-depth {
+  transform-origin: 50% 100%;
+}
+
+.pw-tilt {
+  border-radius: 18px;
 }
 
 .pw-card-body {
@@ -490,7 +498,7 @@
     grid-template-columns: minmax(0, 1fr);
   }
 
-  .pw-card--feature-flip .pw-frame {
+  .pw-card--feature-flip .pw-depth {
     order: 0;
   }
 }

@@ -3,6 +3,7 @@ import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { ArrowUpRight, Menu, X } from "lucide-react";
 
 import { EASE, NAV } from "./site";
+import { pauseScroll, scrollToTop } from "./smoothScroll";
 import "./SiteChrome.css";
 
 
@@ -38,6 +39,7 @@ export function SiteHeader() {
     if (!open) return;
     const previous = document.body.style.overflow;
     document.body.style.overflow = "hidden";
+    pauseScroll(true);
 
     const keydown = (event) => {
       if (event.key === "Escape") {
@@ -53,6 +55,7 @@ export function SiteHeader() {
     window.addEventListener("resize", resize);
     return () => {
       document.body.style.overflow = previous;
+      pauseScroll(false);
       window.removeEventListener("keydown", keydown);
       window.removeEventListener("resize", resize);
     };
@@ -153,7 +156,7 @@ export function SiteFooter() {
         <div className="sc-footer-bottom">
           <span>© {new Date().getFullYear()} MNGM Studios</span>
           <span>Independent web studio, made in Utah</span>
-          <a href="#top" onClick={(event) => { event.preventDefault(); window.scrollTo({ top: 0, behavior: "smooth" }); }}>
+          <a href="#top" onClick={(event) => { event.preventDefault(); scrollToTop(); }}>
             Back to top
           </a>
         </div>
